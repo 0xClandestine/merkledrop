@@ -48,7 +48,7 @@ contract Merkledrop is Clone {
         return _getArgAddress(12);
     }
 
-    function erc20() public pure returns (address) {
+    function asset() public pure returns (address) {
         return _getArgAddress(44);
     }
 
@@ -67,7 +67,7 @@ contract Merkledrop is Clone {
 
         if (valid && !claimed[msg.sender]) {
             claimed[msg.sender] = true;
-            erc20().safeTransfer(msg.sender, value);
+            asset().safeTransfer(msg.sender, value);
         } else {
             revert InvalidProof();
         }
@@ -79,7 +79,7 @@ contract Merkledrop is Clone {
     function refund(address to) external {
         if (msg.sender != creator()) revert CallerNotCreator();
 
-        erc20().safeTransfer(to, ERC20(erc20()).balanceOf(address(this)));
+        asset().safeTransfer(to, ERC20(asset()).balanceOf(address(this)));
 
         emit Refunded(to);
     }

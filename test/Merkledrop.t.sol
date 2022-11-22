@@ -45,7 +45,7 @@ contract MerkledropTest is Test {
 
         // Ensure immutables were setup properly.
         assertEq(merkledrop.creator(), address(this));
-        assertEq(merkledrop.erc20(), address(token));
+        assertEq(merkledrop.asset(), address(token));
         assertEq(merkledrop.merkleRoot(), root);
 
         // Create proofs
