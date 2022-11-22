@@ -38,7 +38,7 @@ contract Merkledrop is Clone {
     /// Mutables
     /// -----------------------------------------------------------------------
 
-    mapping(bytes32 => bool) public claimed;
+    mapping(address => bool) public claimed;
 
     /// -----------------------------------------------------------------------
     /// Immutables
@@ -61,12 +61,12 @@ contract Merkledrop is Clone {
     /// -----------------------------------------------------------------------
 
     function claim(bytes32[] calldata proof, uint256 value) external {
-        bytes32 leaf = keccak256(abi.encodePacked(msg.sender, value));
+        bool valid = proof.verify(
+            merkleRoot(), keccak256(abi.encodePacked(msg.sender, value))
+        );
 
-        bool valid = proof.verify(merkleRoot(), leaf);
-
-        if (valid && !claimed[leaf]) {
-            claimed[leaf] = true;
+        if (valid && !claimed[msg.sender]) {
+            claimed[msg.sender] = true;
             erc20().safeTransfer(msg.sender, value);
         } else {
             revert InvalidProof();
