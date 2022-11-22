@@ -16,6 +16,12 @@ contract MerkledropFactory is SelfPermit, SafeMulticallable {
     using SafeTransferLib for address;
 
     /// -----------------------------------------------------------------------
+    /// Events
+    /// -----------------------------------------------------------------------
+
+    event NewMerkledrop(address instance, address erc20, bytes32 merkleRoot, uint256 totalAirdrop);
+
+    /// -----------------------------------------------------------------------
     /// Immutables
     /// -----------------------------------------------------------------------
 
@@ -38,5 +44,36 @@ contract MerkledropFactory is SelfPermit, SafeMulticallable {
         merkledrop = implementation.clone(immutables);
 
         erc20.safeTransferFrom(msg.sender, merkledrop, totalAirdrop);
+
+        emit NewMerkledrop(merkledrop, erc20, merkleRoot, totalAirdrop);
+    }
+
+    function create(address erc20, bytes32 merkleRoot, uint256 totalAirdrop, bytes32 salt)
+        external
+        returns (address merkledrop)
+    {
+        bytes memory immutables = abi.encode(msg.sender, erc20, merkleRoot);
+
+        merkledrop = implementation.cloneDeterministic(immutables, salt);
+
+        erc20.safeTransferFrom(msg.sender, merkledrop, totalAirdrop);
+
+        emit NewMerkledrop(merkledrop, erc20, merkleRoot, totalAirdrop);
+    }
+
+    /// -----------------------------------------------------------------------
+    /// Viewables
+    /// -----------------------------------------------------------------------
+
+    function predictDeterministicAddress(
+        address creator,
+        address erc20,
+        bytes32 merkleRoot,
+        bytes32 salt
+    ) external view returns (address) {
+
+        bytes memory immutables = abi.encode(creator, erc20, merkleRoot);
+
+        return implementation.predictDeterministicAddress(immutables, salt, address(this));
     }
 }
