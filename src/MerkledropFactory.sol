@@ -19,7 +19,12 @@ contract MerkledropFactory is SelfPermit, SafeMulticallable {
     /// Events
     /// -----------------------------------------------------------------------
 
-    event NewMerkledrop(address instance, address asset, bytes32 merkleRoot, uint256 totalAirdrop);
+    event NewMerkledrop(
+        address instance,
+        address asset,
+        bytes32 merkleRoot,
+        uint256 totalAirdrop
+    );
 
     /// -----------------------------------------------------------------------
     /// Immutables
@@ -32,31 +37,55 @@ contract MerkledropFactory is SelfPermit, SafeMulticallable {
     }
 
     /// -----------------------------------------------------------------------
+    /// Transfer Helper
+    /// -----------------------------------------------------------------------
+
+    function universalTransferFrom(
+        address token,
+        address from,
+        address to,
+        uint256 amount
+    ) internal {
+        if (token != address(0)) {
+            token.safeTransferFrom(from, to, amount);
+        } else {
+            to.safeTransferETH(amount);
+        }
+    }
+
+    /// -----------------------------------------------------------------------
     /// Merkledrop Creation
     /// -----------------------------------------------------------------------
 
     function create(address asset, bytes32 merkleRoot, uint256 totalAirdrop)
         external
+        payable
         returns (address merkledrop)
     {
         bytes memory immutables = abi.encode(msg.sender, asset, merkleRoot);
 
+        if (msg.value > 0) totalAirdrop = msg.value;
+
         merkledrop = implementation.clone(immutables);
 
-        asset.safeTransferFrom(msg.sender, merkledrop, totalAirdrop);
+        universalTransferFrom(asset, msg.sender, merkledrop, totalAirdrop);
 
         emit NewMerkledrop(merkledrop, asset, merkleRoot, totalAirdrop);
     }
 
-    function create(address asset, bytes32 merkleRoot, uint256 totalAirdrop, bytes32 salt)
-        external
-        returns (address merkledrop)
-    {
+    function create(
+        address asset,
+        bytes32 merkleRoot,
+        uint256 totalAirdrop,
+        bytes32 salt
+    ) external payable returns (address merkledrop) {
         bytes memory immutables = abi.encode(msg.sender, asset, merkleRoot);
+
+        if (msg.value > 0) totalAirdrop = msg.value;
 
         merkledrop = implementation.cloneDeterministic(immutables, salt);
 
-        asset.safeTransferFrom(msg.sender, merkledrop, totalAirdrop);
+        universalTransferFrom(asset, msg.sender, merkledrop, totalAirdrop);
 
         emit NewMerkledrop(merkledrop, asset, merkleRoot, totalAirdrop);
     }
@@ -71,9 +100,10 @@ contract MerkledropFactory is SelfPermit, SafeMulticallable {
         bytes32 merkleRoot,
         bytes32 salt
     ) external view returns (address) {
-
         bytes memory immutables = abi.encode(creator, asset, merkleRoot);
 
-        return implementation.predictDeterministicAddress(immutables, salt, address(this));
+        return implementation.predictDeterministicAddress(
+            immutables, salt, address(this)
+        );
     }
 }

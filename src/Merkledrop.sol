@@ -10,6 +10,8 @@ abstract contract ERC20 {
 }
 
 contract Merkledrop is Clone {
+    receive() external payable {}
+
     /// -----------------------------------------------------------------------
     /// Dependencies
     /// -----------------------------------------------------------------------
@@ -24,7 +26,7 @@ contract Merkledrop is Clone {
 
     event Claim(address account, uint256 amount);
 
-    event Refunded(address to);
+    event Recovered(address to);
 
     /// -----------------------------------------------------------------------
     /// Errors
@@ -57,6 +59,20 @@ contract Merkledrop is Clone {
     }
 
     /// -----------------------------------------------------------------------
+    /// Transfer Helper
+    /// -----------------------------------------------------------------------
+
+    function universalTransfer(address token, address to, uint256 amount)
+        internal
+    {
+        if (token != address(0)) {
+            token.safeTransfer(to, amount);
+        } else {
+            to.safeTransferETH(amount);
+        }
+    }
+
+    /// -----------------------------------------------------------------------
     /// Actions
     /// -----------------------------------------------------------------------
 
@@ -67,7 +83,7 @@ contract Merkledrop is Clone {
 
         if (valid && !claimed[msg.sender]) {
             claimed[msg.sender] = true;
-            asset().safeTransfer(msg.sender, value);
+            universalTransfer(asset(), msg.sender, value);
         } else {
             revert InvalidProof();
         }
@@ -76,11 +92,17 @@ contract Merkledrop is Clone {
     }
 
     /// @notice Allows creator to refund/remove all deposited funds.
-    function refund(address to) external {
+    function recover(address token, address to) external {
         if (msg.sender != creator()) revert CallerNotCreator();
 
-        asset().safeTransfer(to, ERC20(asset()).balanceOf(address(this)));
+        uint256 balance = token != address(0)
+            // If 'token' address is provided assume we're sending ERC20 tokens.
+            ? ERC20(asset()).balanceOf(address(this))
+            // Otherwise assume we're sending ether.
+            : address(this).balance;
 
-        emit Refunded(to);
+        universalTransfer(asset(), to, balance);
+
+        emit Recovered(to);
     }
 }
