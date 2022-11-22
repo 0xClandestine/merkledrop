@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import {Test} from "forge-std/Test.sol";
 import {ERC20} from "solbase/tokens/ERC20/ERC20.sol";
 import {Merkle} from "murky/Merkle.sol";
-import {MerkledropFactory} from "../src/Factory.sol";
+import {MerkledropFactory} from "../src/MerkledropFactory.sol";
 import {Merkledrop} from "../src/Merkledrop.sol";
 
 contract MockERC20 is ERC20 {
