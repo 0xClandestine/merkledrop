@@ -12,7 +12,7 @@ Merkledrop allows anyone to mass distribute large amounts of tokens for only 100
 To install with [Foundry](https://github.com/gakonst/foundry):
 
 ```
-forge install 0xClandestine/tiny-bonds
+forge install 0xClandestine/merkledrop
 ```
 
 ## Local development
