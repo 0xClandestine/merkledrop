@@ -27,20 +27,12 @@ contract MerkledropTest is Test {
         token = new MockERC20();
     }
 
-    function getAddress(bytes32 salt, uint256 index)
-        internal
-        pure
-        returns (address)
-    {
-        return address(uint160(uint256(keccak256(abi.encode(salt, index)))));
+    function getAddress(bytes32 hash) internal pure returns (address) {
+        return address(uint160(uint256(hash)));
     }
 
-    function getAmount(bytes32 salt, uint256 index)
-        internal
-        pure
-        returns (uint256)
-    {
-        return uint256(keccak256(abi.encode(salt, index))) % 100_000 ether;
+    function getAmount(bytes32 hash) internal pure returns (uint256) {
+        return uint256(hash) % 100_000_000 ether;
     }
 
     function testMerkledrop(bytes32 salt, uint256 dataLen) public {
@@ -53,10 +45,11 @@ contract MerkledropTest is Test {
 
         unchecked {
             for (uint256 i; i < dataLen; ++i) {
-                uint256 amount = getAmount(salt, i);
+                bytes32 hash = keccak256(abi.encode(salt, i));
 
-                data[i] =
-                    keccak256(abi.encodePacked(getAddress(salt, i), amount));
+                uint256 amount = getAmount(hash);
+
+                data[i] = keccak256(abi.encodePacked(getAddress(hash), amount));
 
                 totalAirdrop += amount;
             }
@@ -84,24 +77,26 @@ contract MerkledropTest is Test {
             for (uint256 i; i < dataLen; ++i) {
                 proofs[i] = murky.getProof(data, i);
 
+                bytes32 hash = keccak256(abi.encode(salt, i));
+
                 // Ensure address cannot claim more than intended.
-                vm.prank(getAddress(salt, i));
+                vm.prank(getAddress(hash));
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(salt, i) + 1);
+                merkledrop.claim(proofs[i], getAmount(hash) + 1);
 
                 // Ensure address cannot claim less than intended.
-                vm.prank(getAddress(salt, i));
+                vm.prank(getAddress(hash));
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(salt, i) - 1);
+                merkledrop.claim(proofs[i], getAmount(hash) - 1);
 
                 // Ensure address can claim as expected.
-                vm.prank(getAddress(salt, i));
-                merkledrop.claim(proofs[i], getAmount(salt, i));
+                vm.prank(getAddress(hash));
+                merkledrop.claim(proofs[i], getAmount(hash));
 
                 // Ensure address cannot replay claim.
-                vm.prank(getAddress(salt, i));
+                vm.prank(getAddress(hash));
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(salt, i));
+                merkledrop.claim(proofs[i], getAmount(hash));
             }
         }
     }
@@ -116,10 +111,11 @@ contract MerkledropTest is Test {
 
         unchecked {
             for (uint256 i; i < dataLen; ++i) {
-                uint256 amount = getAmount(salt, i);
+                bytes32 hash = keccak256(abi.encode(salt, i));
 
-                data[i] =
-                    keccak256(abi.encodePacked(getAddress(salt, i), amount));
+                uint256 amount = getAmount(hash);
+
+                data[i] = keccak256(abi.encodePacked(getAddress(hash), amount));
 
                 totalAirdrop += amount;
             }
@@ -150,24 +146,26 @@ contract MerkledropTest is Test {
             for (uint256 i; i < dataLen; ++i) {
                 proofs[i] = murky.getProof(data, i);
 
+                bytes32 hash = keccak256(abi.encode(salt, i));
+
                 // Ensure address cannot claim more than intended.
-                vm.prank(getAddress(salt, i));
+                vm.prank(getAddress(hash));
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(salt, i) + 1);
+                merkledrop.claim(proofs[i], getAmount(hash) + 1);
 
                 // Ensure address cannot claim less than intended.
-                vm.prank(getAddress(salt, i));
+                vm.prank(getAddress(hash));
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(salt, i) - 1);
+                merkledrop.claim(proofs[i], getAmount(hash) - 1);
 
                 // Ensure address can claim as expected.
-                vm.prank(getAddress(salt, i));
-                merkledrop.claim(proofs[i], getAmount(salt, i));
+                vm.prank(getAddress(hash));
+                merkledrop.claim(proofs[i], getAmount(hash));
 
                 // Ensure address cannot replay claim.
-                vm.prank(getAddress(salt, i));
+                vm.prank(getAddress(hash));
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(salt, i));
+                merkledrop.claim(proofs[i], getAmount(hash));
             }
         }
     }
