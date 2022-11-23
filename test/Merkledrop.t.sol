@@ -32,7 +32,7 @@ contract MerkledropTest is Test {
     }
 
     function getAmount(bytes32 hash) internal pure returns (uint256) {
-        return uint256(hash) % 100_000_000 ether;
+        return uint256(hash) % 100_000_000_000 ether;
     }
 
     function testMerkledrop(bytes32 salt, uint256 dataLen) public {
@@ -78,25 +78,27 @@ contract MerkledropTest is Test {
                 proofs[i] = murky.getProof(data, i);
 
                 bytes32 hash = keccak256(abi.encode(salt, i));
+                address account = getAddress(hash);
+                uint256 amount = getAmount(hash);
 
                 // Ensure address cannot claim more than intended.
-                vm.prank(getAddress(hash));
+                vm.prank(account);
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(hash) + 1);
+                merkledrop.claim(proofs[i], amount + 1);
 
                 // Ensure address cannot claim less than intended.
-                vm.prank(getAddress(hash));
+                vm.prank(account);
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(hash) - 1);
+                merkledrop.claim(proofs[i], amount - 1);
 
                 // Ensure address can claim as expected.
-                vm.prank(getAddress(hash));
-                merkledrop.claim(proofs[i], getAmount(hash));
+                vm.prank(account);
+                merkledrop.claim(proofs[i], amount);
 
                 // Ensure address cannot replay claim.
-                vm.prank(getAddress(hash));
+                vm.prank(account);
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(hash));
+                merkledrop.claim(proofs[i], amount);
             }
         }
     }
@@ -129,7 +131,7 @@ contract MerkledropTest is Test {
         merkledrop = Merkledrop(
             payable(
                 factory.create{value: totalAirdrop}(
-                    address(0), root, totalAirdrop
+                    address(0), root, 0
                 )
             )
         );
@@ -147,25 +149,27 @@ contract MerkledropTest is Test {
                 proofs[i] = murky.getProof(data, i);
 
                 bytes32 hash = keccak256(abi.encode(salt, i));
+                address account = getAddress(hash);
+                uint256 amount = getAmount(hash);
 
                 // Ensure address cannot claim more than intended.
-                vm.prank(getAddress(hash));
+                vm.prank(account);
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(hash) + 1);
+                merkledrop.claim(proofs[i], amount + 1);
 
                 // Ensure address cannot claim less than intended.
-                vm.prank(getAddress(hash));
+                vm.prank(account);
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(hash) - 1);
+                merkledrop.claim(proofs[i], amount - 1);
 
                 // Ensure address can claim as expected.
-                vm.prank(getAddress(hash));
-                merkledrop.claim(proofs[i], getAmount(hash));
+                vm.prank(account);
+                merkledrop.claim(proofs[i], amount);
 
                 // Ensure address cannot replay claim.
-                vm.prank(getAddress(hash));
+                vm.prank(account);
                 vm.expectRevert();
-                merkledrop.claim(proofs[i], getAmount(hash));
+                merkledrop.claim(proofs[i], amount);
             }
         }
     }
