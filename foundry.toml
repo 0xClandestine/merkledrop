@@ -4,6 +4,11 @@ out = 'out'
 libs = ['lib']
 solc = '0.8.13'
 
+[rpc_endpoints]
+goerli = "${GOERLI_RPC_URL}"
+
+[etherscan]
+goerli = { key = "${ETHERSCAN_API_KEY}" }
 
 [fmt]
 line_length = 80
