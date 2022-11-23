@@ -129,19 +129,18 @@ contract MerkledropTest is Test {
         bytes32 root = murky.getRoot(data);
 
         // Give this contract some test tokens to create a merkledrop.
-        token.mint(address(this), totalAirdrop);
-        token.approve(address(factory), totalAirdrop);
+        deal(address(this), totalAirdrop);
         merkledrop = Merkledrop(
             payable(
                 factory.create{value: totalAirdrop}(
-                    address(token), root, totalAirdrop
+                    address(0), root, totalAirdrop
                 )
             )
         );
 
         // Ensure immutables were setup properly.
         assertEq(merkledrop.creator(), address(this));
-        assertEq(merkledrop.asset(), address(token));
+        assertEq(merkledrop.asset(), address(0));
         assertEq(merkledrop.merkleRoot(), root);
 
         // Generate proofs
