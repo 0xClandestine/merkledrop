@@ -4,7 +4,7 @@ Merkledrop allows anyone to mass distribute large amounts of tokens for only 100
 
 ## Deployments
 
--   [`MerkledropFactory.sol`](src/MerkledropFactory.sol): [Goerli](https://goerli.etherscan.io/address/0x7a325031c4F83C87B2165E58cef53e8C9956E973)
+-  [Goerli](https://goerli.etherscan.io/address/0x240009354c9302776970918eBD0677bCe3B43F4A)
 
 ## Architecture
 
