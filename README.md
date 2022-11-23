@@ -2,6 +2,10 @@
 
 Merkledrop allows anyone to mass distribute large amounts of tokens for only 100k gas.
 
+## Deployments
+
+-   [`MerkledropFactory.sol`](src/MerkledropFactory.sol): [Goerli](https://goerli.etherscan.io/address/0x7a325031c4F83C87B2165E58cef53e8C9956E973)
+
 ## Architecture
 
 -   [`Merkledrop.sol`](src/Merkledrop.sol): `Merkledrop` allows anyone to mass distribute large amounts of tokens for only 100k gas.
