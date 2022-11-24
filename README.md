@@ -1,6 +1,6 @@
 # 🪄Merkledrop
 
-Merkledrop allows anyone to mass distribute large amounts of tokens for only 100k gas.
+Merkledrop allows anyone to mass distribute large tokens for 135k gas.
 
 ## Deployments
 
@@ -8,7 +8,7 @@ Merkledrop allows anyone to mass distribute large amounts of tokens for only 100
 
 ## Architecture
 
--   [`Merkledrop.sol`](src/Merkledrop.sol): `Merkledrop` allows anyone to mass distribute large amounts of tokens for only 100k gas.
+-   [`Merkledrop.sol`](src/Merkledrop.sol): `Merkledrop` allows anyone to mass distribute large tokens for 135k gas.
 -   [`MerkledropFactory.sol`](src/MerkledropFactory.sol): Minimal proxy factory that creates `Merkledrop` clones.
 
 ## Installation
