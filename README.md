@@ -5,6 +5,8 @@ Merkledrop allows anyone to mass distribute tokens for 135k gas.
 ## Deployments
 
 -  [Goerli](https://goerli.etherscan.io/address/0x240009354c9302776970918eBD0677bCe3B43F4A)
+-  [Mainet](https://etherscan.io/address/0xB7113FF8F7a56403cEdF02fF103B57F3E6FABd3D)
+
 
 ## Architecture
 
