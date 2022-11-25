@@ -1,6 +1,6 @@
 # 🪄Merkledrop
 
-Merkledrop allows anyone to mass distribute large tokens for 135k gas.
+Merkledrop allows anyone to mass distribute tokens for 135k gas.
 
 ## Deployments
 
